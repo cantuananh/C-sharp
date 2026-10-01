@@ -79,7 +79,8 @@
   .dots{display:flex;gap:5px;flex:1;min-width:140px;justify-content:flex-end;flex-wrap:wrap}
   .dot{flex:none;width:11px;height:11px;min-width:11px;border-radius:50%;background:#334155;border:0;padding:0;cursor:pointer}
   .dot.done{background:#64748b}.dot.cur{background:var(--amber);transform:scale(1.35)}.dot.q{border-radius:3px}
-  #full{position:absolute;right:20px;top:18px;background:var(--amber);color:#1c1300;font-weight:700;font-size:14px;padding:7px 14px;border-radius:999px;text-decoration:none}
+  #full{position:absolute;right:20px;top:18px;background:var(--amber);color:#1c1300;font-weight:700;font-size:14px;padding:7px 14px;border-radius:999px;border:0;cursor:pointer;font-family:inherit}
+  #fullnote{position:absolute;right:20px;top:56px;max-width:320px;background:#7f1d1d;color:#fecaca;font-size:13px;padding:8px 10px;border-radius:8px;z-index:20}
   #full:hover{filter:brightness(1.1)}
   header{position:relative}
   @media (max-width:640px){#full{position:static;display:inline-block;margin-top:8px}}
@@ -115,7 +116,8 @@
   <h1>Bài 1 – Biến là gì? <span style="color:var(--amber)">Biến là một chiếc hộp</span></h1>
   <p>Bấm <b>Tiếp →</b> (hoặc phím mũi tên) để chạy từng dòng lệnh. Khi gặp ⏸ điểm dừng, hãy trả lời trước khi đi tiếp.</p>
   <div class="parts" id="parts"></div>
-  <a id="full" hidden target="_blank" rel="noopener" href="https://cantuananh.github.io/C-sharp/bien/">⛶ Mở toàn màn hình ↗</a>
+  <button id="full" type="button" hidden>⛶ Phóng to</button>
+  <div id="fullnote" hidden>Khung bài học này không cho phóng to. Hãy dùng liên kết &quot;Mở bài tương tác toàn màn hình&quot; đặt ngay trong bài.</div>
 </header>
 
 <main>
@@ -379,6 +381,13 @@ function startPlay(){
 /* ============ Khởi tạo ============ */
 (function init(){
   try{ if(window.self!==window.top) $('#full').hidden=false; }catch(e){ $('#full').hidden=false; }
+  $('#full').onclick = ()=>{
+    const el = document.documentElement, fn = el.requestFullscreen || el.webkitRequestFullscreen;
+    const fail = ()=>{ const n=$('#fullnote'); n.hidden=false; setTimeout(()=>n.hidden=true,6000); };
+    if(document.fullscreenElement || document.webkitFullscreenElement){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); return; }
+    if(!fn){ fail(); return; }
+    try{ const r = fn.call(el); if(r && r.catch) r.catch(fail); }catch(e){ fail(); }
+  };
   const firstOfPart = PARTS.map((_,p)=>STEPS.findIndex(s=>s.part===p));
   PARTS.forEach((p,i)=>{
     const b = document.createElement('button'); b.textContent=p;
